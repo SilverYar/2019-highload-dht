@@ -1,7 +1,10 @@
 package ru.mail.polis.dao;
 
 import org.jetbrains.annotations.NotNull;
-import org.rocksdb.*;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.rocksdb.RocksIterator;
 import ru.mail.polis.Record;
 
 import java.io.File;
@@ -107,7 +110,7 @@ public final class DAOImpl implements DAO {
     public class MyIterator implements Iterator<Record>, AutoCloseable {
         private final RocksIterator iterator;
 
-        public MyIterator(RocksIterator iterator) {
+        public MyIterator(final RocksIterator iterator) {
             this.iterator = iterator;
         }
 

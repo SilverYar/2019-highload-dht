@@ -27,11 +27,21 @@ public class ServiceImpl extends HttpServer implements Service {
     }
 
 
+    /**
+     *  Method status
+     *
+     * @return Response
+     */
     @Path("/v0/status")
     public Response status() {
         return Response.ok("OK");
     }
 
+    /**
+     *  Method entity
+     *
+     * @return Response
+     */
     @Path("/v0/entity")
     public Response entity(
             @Param("id") final String id,
