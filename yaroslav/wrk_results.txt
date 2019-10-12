@@ -1,0 +1,34 @@
+GET 
+Running 30s test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   115.04us  468.19us  26.85ms   99.25%
+    Req/Sec     8.97k     1.56k   11.31k    78.82%
+  Latency Distribution
+     50%   85.00us
+     75%  102.00us
+     90%  133.00us
+     99%  457.00us
+  1074314 requests in 30.10s, 70.69MB read
+  Non-2xx or 3xx responses: 1074314
+Requests/sec:  35692.16
+Transfer/sec:      2.35MB
+
+
+______________________________________________
+
+PUT
+Running 1m test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   679.89us    4.25ms 122.74ms   97.66%
+    Req/Sec     5.23k     1.33k    7.07k    80.84%
+  Latency Distribution
+     50%  145.00us
+     75%  187.00us
+     90%  351.00us
+     99%   12.33ms
+  1247420 requests in 1.00m, 79.71MB read
+Requests/sec:  20785.07
+Transfer/sec:      1.33MB
+(base) MacBook-Air-Maria:2019-highload-dht-yar stakenschneidermac$ 
