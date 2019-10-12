@@ -28,7 +28,7 @@ public class ServiceImpl extends HttpServer implements Service {
 
 
     /**
-     *  Method status
+     *  Method status.
      *
      * @return Response
      */
@@ -38,7 +38,7 @@ public class ServiceImpl extends HttpServer implements Service {
     }
 
     /**
-     *  Method entity
+     *  Method entity.
      *
      * @return Response
      */
