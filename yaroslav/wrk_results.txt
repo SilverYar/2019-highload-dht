@@ -1,6 +1,7 @@
 GET 
 Running 30s test @ http://localhost:8080
   4 threads and 4 connections
+  Latency Distribution (HdrHistogram - Recorded Latency)
   Thread Stats   Avg      Stdev     Max   +/- Stdev
     Latency   115.04us  468.19us  26.85ms   99.25%
     Req/Sec     8.97k     1.56k   11.31k    78.82%
