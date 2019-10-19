@@ -37,7 +37,6 @@ dependencies {
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.0")
 
     compile("org.rocksdb", "rocksdbjni", "6.2.2")
-
 }
 
 val run by tasks.getting(JavaExec::class) {

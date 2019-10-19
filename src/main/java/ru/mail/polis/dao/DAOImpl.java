@@ -16,7 +16,6 @@ import java.util.Iterator;
 import static java.lang.Byte.MIN_VALUE;
 import static org.rocksdb.BuiltinComparator.BYTEWISE_COMPARATOR;
 
-
 public final class DAOImpl implements DAO {
 
     private final RocksDB db;
