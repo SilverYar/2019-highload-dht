@@ -1,14 +1,15 @@
 package ru.mail.polis.service.yaroslav;
 
 import one.nio.http.HttpServer;
-import one.nio.http.Param;
 import one.nio.http.Path;
 import one.nio.http.Request;
 import one.nio.http.HttpServerConfig;
 import one.nio.http.HttpSession;
 import one.nio.http.Response;
+import one.nio.net.Socket;
 import one.nio.server.AcceptorConfig;
 import org.jetbrains.annotations.NotNull;
+import ru.mail.polis.Record;
 import ru.mail.polis.dao.DAO;
 import ru.mail.polis.dao.NoSuchElementExceptionLite;
 import ru.mail.polis.service.Service;
@@ -16,19 +17,51 @@ import ru.mail.polis.service.Service;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.concurrent.Executor;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.INFO;
 
 public class ServiceImpl extends HttpServer implements Service {
+    @NotNull
     private final DAO dao;
+    @NotNull
+    private final Executor executor;
 
-    public ServiceImpl(final int port,
-                     @NotNull final DAO dao) throws IOException {
-        super(getConfig(port));
-        this.dao = dao;
-    }
-
+    private static final Logger logger = Logger.getLogger(ServiceImpl.class.getName());
 
     /**
-     *  Method status.
+     * Async Service.
+     *
+     * @param port     - HTTP connections
+     * @param dao      - interface
+     * @param executor - worker
+     */
+    public ServiceImpl(int port, final DAO dao, final Executor executor) throws IOException {
+        super(from(port));
+        this.dao = dao;
+        this.executor = executor;
+    }
+
+    private static HttpServerConfig from(final int port) {
+        final AcceptorConfig ac = new AcceptorConfig();
+        ac.port = port;
+        ac.reusePort = true;
+        ac.deferAccept = true;
+
+        final HttpServerConfig config = new HttpServerConfig();
+        config.acceptors = new AcceptorConfig[]{ac};
+        return config;
+    }
+
+    @Override
+    public HttpSession createSession(final Socket socket) {
+        return new StorageSession(socket, this);
+    }
+
+    /**
+     * Method status.
      *
      * @return Response
      */
@@ -38,51 +71,102 @@ public class ServiceImpl extends HttpServer implements Service {
     }
 
     /**
-     *  Method entity.
+     * Method entity.
      *
-     * @return Response
      */
     @Path("/v0/entity")
-    public Response entity(
-            @Param("id") final String id,
-            @NotNull final Request request
-    ) throws IOException {
+    private void entity(final Request request, final HttpSession session) throws IOException {
+        final String id = request.getParameter("id=");
         if (id == null || id.isEmpty()) {
-
-            return new Response(Response.BAD_REQUEST, "Id must be not null".getBytes(StandardCharsets.UTF_8));
-        }
-            final var key = ByteBuffer.wrap(id.getBytes(StandardCharsets.UTF_8));
-            switch (request.getMethod()) {
-                case Request.METHOD_GET: {
-                    return get(key);
-                }
-                case Request.METHOD_PUT: {
-                    return put(key, request);
-                }
-                case Request.METHOD_DELETE: {
-                    return delete(key);
-                }
-                default:
-                    return new Response(Response.METHOD_NOT_ALLOWED, Response.EMPTY);
+            try {
+                session.sendResponse(new Response(Response.BAD_REQUEST, Response.EMPTY));
+            } catch (IOException e) {
+                logger.log(INFO, "something has gone terribly wrong", e);
             }
+            return;
+        }
 
+        final var key = ByteBuffer.wrap(id.getBytes(StandardCharsets.UTF_8));
+        try {
+            switch (request.getMethod()) {
+                case Request.METHOD_GET:
+                    executeAsync(session, () -> get(key));
+                    break;
+                case Request.METHOD_PUT:
+                    executeAsync(session, () -> put(key, request));
+                    break;
+                case Request.METHOD_DELETE:
+                    executeAsync(session, () -> delete(key));
+                    break;
+                default:
+                    session.sendError(Response.METHOD_NOT_ALLOWED, "Wrong method");
+                    break;
+            }
+        } catch (IOException e) {
+            session.sendError(Response.INTERNAL_ERROR, e.getMessage());
+        }
     }
+
 
     @Override
     public void handleDefault(final Request request, final HttpSession session) throws IOException {
-        final var response = new Response(Response.BAD_REQUEST, Response.EMPTY);
-        session.sendResponse(response);
+        switch (request.getPath()) {
+            case "/v0/entity":
+                entity(request, session);
+                break;
+            case "/v0/entities":
+                entities(request, session);
+                break;
+            default:
+                session.sendError(Response.BAD_REQUEST, "Wrong path");
+                break;
+        }
     }
 
-    private static HttpServerConfig getConfig(final int port) {
-        if (port <= 1024 || 65536 <= port) {
-            throw new IllegalArgumentException("invalid port");
+    private void executeAsync(final HttpSession session, final Action action) {
+        executor.execute(() -> {
+            try {
+                session.sendResponse(action.act());
+            } catch (IOException e) {
+                try {
+                    session.sendError(Response.INTERNAL_ERROR, e.getMessage());
+                } catch (IOException ex) {
+                    logger.log(INFO, "something has gone terribly wrong", e);
+                }
+            }
+        });
+    }
+
+    @FunctionalInterface
+    interface Action {
+        Response act() throws IOException;
+    }
+
+    private void entities(final Request request, HttpSession session) throws IOException {
+        final String start = request.getParameter("start=");
+        if (start == null || start.isEmpty()) {
+            session.sendError(Response.BAD_REQUEST, "No start");
+            return;
         }
-        final AcceptorConfig acceptor = new AcceptorConfig();
-        acceptor.port = port;
-        final HttpServerConfig config = new HttpServerConfig();
-        config.acceptors = new AcceptorConfig[]{acceptor};
-        return config;
+
+        if (request.getMethod() != Request.METHOD_GET) {
+            session.sendError(Response.METHOD_NOT_ALLOWED, "Wrong method");
+            return;
+        }
+
+        String end = request.getParameter("end=");
+        if (end != null && end.isEmpty()) {
+            end = null;
+        }
+
+        try {
+            final Iterator<Record> records =
+                    dao.range(ByteBuffer.wrap(start.getBytes(StandardCharsets.UTF_8)),
+                            end == null ? null : ByteBuffer.wrap(end.getBytes(StandardCharsets.UTF_8)));
+            ((StorageSession) session).stream(records);
+        } catch (IOException e) {
+            session.sendError(Response.INTERNAL_ERROR, e.getMessage());
+        }
     }
 
     private Response put(final ByteBuffer key, final Request request) throws IOException {
@@ -95,7 +179,7 @@ public class ServiceImpl extends HttpServer implements Service {
         return new Response(Response.ACCEPTED, Response.EMPTY);
     }
 
-    private Response get(final ByteBuffer key){
+    private Response get(final ByteBuffer key) {
         try {
             final ByteBuffer value = dao.get(key);
             final ByteBuffer duplicate = value.duplicate();
