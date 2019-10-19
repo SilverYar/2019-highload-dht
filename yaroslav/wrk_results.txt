@@ -1,35 +1,153 @@
-GET 
+GET service
+
 Running 30s test @ http://localhost:8080
   4 threads and 4 connections
-  Latency Distribution (HdrHistogram - Recorded Latency)
+  Thread calibration: mean lat.: 2109.887ms, rate sampling interval: 6303ms
+  Thread calibration: mean lat.: 2363.676ms, rate sampling interval: 6791ms
+  Thread calibration: mean lat.: 2378.763ms, rate sampling interval: 6946ms
+  Thread calibration: mean lat.: 2075.907ms, rate sampling interval: 6168ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   115.04us  468.19us  26.85ms   99.25%
-    Req/Sec     8.97k     1.56k   11.31k    78.82%
-  Latency Distribution
-     50%   85.00us
-     75%  102.00us
-     90%  133.00us
-     99%  457.00us
-  1074314 requests in 30.10s, 70.69MB read
-  Non-2xx or 3xx responses: 1074314
-Requests/sec:  35692.16
-Transfer/sec:      2.35MB
+    Latency     5.63s     2.92s   13.34s    83.00%
+    Req/Sec     4.30k     1.96k    6.67k    40.00%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    4.33s 
+ 75.000%    5.67s 
+ 90.000%   11.49s 
+ 99.000%   13.27s 
+ 99.900%   13.34s 
+ 99.990%   13.35s 
+ 99.999%   13.35s 
+100.000%   13.35s 
 
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+    3260.415     0.000000           36         1.00
+    3532.799     0.100000        32446         1.11
+...
+   13352.959     0.999878       318627      8192.00
+   13352.959     1.000000       318627          inf
+#[Mean    =     5630.360, StdDeviation   =     2922.631]
+#[Max     =    13344.768, Total count    =       318627]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  518326 requests in 30.00s, 34.11MB read
+  Non-2xx or 3xx responses: 518326
+Requests/sec:  17278.34
+Transfer/sec:      1.14MB
+
+
+GET Async Service
+
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 496.545ms, rate sampling interval: 2027ms
+  Thread calibration: mean lat.: 484.539ms, rate sampling interval: 1970ms
+  Thread calibration: mean lat.: 839.059ms, rate sampling interval: 3389ms
+  Thread calibration: mean lat.: 993.764ms, rate sampling interval: 3991ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.56s     1.53s    6.21s    63.22%
+    Req/Sec     6.74k     1.11k    8.80k    62.07%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    2.33s 
+ 75.000%    2.83s 
+ 90.000%    5.23s 
+ 99.000%    6.11s 
+ 99.900%    6.22s 
+ 99.990%    6.22s 
+ 99.999%    6.22s 
+100.000%    6.22s 
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+     614.399     0.000000           28         1.00
+     852.991     0.100000        53383         1.11
+...
+    6217.727     0.998633       532205       731.43
+    6217.727     1.000000       532205          inf
+#[Mean    =     2560.233, StdDeviation   =     1530.324]
+#[Max     =     6213.632, Total count    =       532205]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  791244 requests in 30.00s, 52.07MB read
+  Non-2xx or 3xx responses: 791244
+Requests/sec:  26375.89
+Transfer/sec:      1.74MB
 
 ______________________________________________
 
-PUT
-Running 1m test @ http://localhost:8080
+PUT service
+Running 30s test @ http://localhost:8080
   4 threads and 4 connections
+  Thread calibration: mean lat.: 3152.254ms, rate sampling interval: 10813ms
+  Thread calibration: mean lat.: 3318.729ms, rate sampling interval: 11313ms
+  Thread calibration: mean lat.: 3501.710ms, rate sampling interval: 11960ms
+  Thread calibration: mean lat.: 3335.692ms, rate sampling interval: 11517ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   679.89us    4.25ms 122.74ms   97.66%
-    Req/Sec     5.23k     1.33k    7.07k    80.84%
-  Latency Distribution
-     50%  145.00us
-     75%  187.00us
-     90%  351.00us
-     99%   12.33ms
-  1247420 requests in 1.00m, 79.71MB read
-Requests/sec:  20785.07
-Transfer/sec:      1.33MB
-(base) MacBook-Air-Maria:2019-highload-dht-yar stakenschneidermac$ 
+    Latency     9.04s     1.62s   12.22s    58.45%
+    Req/Sec     5.72k    95.56     5.86k    50.00%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    8.85s 
+ 75.000%   10.36s 
+ 90.000%   11.49s 
+ 99.000%   12.12s 
+ 99.900%   12.21s 
+ 99.990%   12.23s 
+ 99.999%   12.23s 
+100.000%   12.23s 
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+    6217.727     0.000000            5         1.00
+    7057.407     0.100000        44742         1.11
+...
+   12230.655     0.999756       447061      4096.00
+   12230.655     1.000000       447061          inf
+#[Mean    =     9042.434, StdDeviation   =     1621.191]
+#[Max     =    12222.464, Total count    =       447061]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  555605 requests in 30.00s, 35.50MB read
+Requests/sec:  18522.31
+Transfer/sec:      1.18MB
+
+PUT Async Service
+Running 30s test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 2413.554ms, rate sampling interval: 6991ms
+  Thread calibration: mean lat.: 2312.697ms, rate sampling interval: 6746ms
+  Thread calibration: mean lat.: 2215.106ms, rate sampling interval: 6512ms
+  Thread calibration: mean lat.: 2199.910ms, rate sampling interval: 6488ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    10.29s     5.15s   18.69s    52.19%
+    Req/Sec     1.87k   472.16     2.47k    30.00%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    9.82s 
+ 75.000%   15.20s 
+ 90.000%   17.56s 
+ 99.000%   18.61s 
+ 99.900%   18.69s 
+ 99.990%   18.71s 
+ 99.999%   18.71s 
+100.000%   18.71s 
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+    3440.639     0.000000           54         1.00
+    3715.071     0.100000        15497         1.11
+...
+   18710.527     0.999878       154678      8192.00
+   18710.527     1.000000       154678          inf
+#[Mean    =    10292.113, StdDeviation   =     5150.796]
+#[Max     =    18694.144, Total count    =       154678]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  351844 requests in 30.00s, 22.48MB read
+Requests/sec:  11728.97
+Transfer/sec:    767.42KB
+
+
+Резюме.
+Из тестирования производительности HTTP сервера видно, что асинхронная реализация нашего сервера на запросах GET работает в два раза быстрее, а на PUT - становится чуть лучше. Из профилирования видно, что теперь появились новые потоки 'worker'-ы.
