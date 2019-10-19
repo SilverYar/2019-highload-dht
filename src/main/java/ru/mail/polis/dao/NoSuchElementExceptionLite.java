@@ -9,6 +9,7 @@ public class NoSuchElementExceptionLite extends NoSuchElementException {
     }
 
     @Override
+    @SuppressWarnings("UnsynchronizedOverridesSynchronized")
     public Throwable fillInStackTrace() {
             return this;
     }

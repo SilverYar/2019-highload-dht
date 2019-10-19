@@ -38,7 +38,7 @@ public class ServiceImpl extends HttpServer implements Service {
      * @param dao      - interface
      * @param executor - worker
      */
-    public ServiceImpl(int port, final DAO dao, final Executor executor) throws IOException {
+    public ServiceImpl(final int port, final DAO dao, final Executor executor) throws IOException {
         super(from(port));
         this.dao = dao;
         this.executor = executor;
@@ -142,7 +142,7 @@ public class ServiceImpl extends HttpServer implements Service {
         Response act() throws IOException;
     }
 
-    private void entities(final Request request, HttpSession session) throws IOException {
+    private void entities(final Request request,final HttpSession session) throws IOException {
         final String start = request.getParameter("start=");
         if (start == null || start.isEmpty()) {
             session.sendError(Response.BAD_REQUEST, "No start");
