@@ -137,7 +137,7 @@ public class ServiceImpl extends HttpServer implements Service {
         try {
             return clusterClients.get(cluster).invoke(request);
         } catch (InterruptedException | PoolException | HttpException e) {
-            throw new IOException(e.getMessage());
+            throw new IOException("forwardRequestTo", e);
         }
     }
 
