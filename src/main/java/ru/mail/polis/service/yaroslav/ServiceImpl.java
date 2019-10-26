@@ -1,12 +1,10 @@
 package ru.mail.polis.service.yaroslav;
 
-import one.nio.http.HttpServer;
-import one.nio.http.Path;
-import one.nio.http.Request;
-import one.nio.http.HttpServerConfig;
-import one.nio.http.HttpSession;
-import one.nio.http.Response;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import one.nio.http.*;
+import one.nio.net.ConnectionString;
 import one.nio.net.Socket;
+import one.nio.pool.PoolException;
 import one.nio.server.AcceptorConfig;
 import org.jetbrains.annotations.NotNull;
 import ru.mail.polis.Record;
@@ -17,8 +15,11 @@ import ru.mail.polis.service.Service;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.INFO;
@@ -28,31 +29,40 @@ public class ServiceImpl extends HttpServer implements Service {
     private final DAO dao;
     @NotNull
     private final Executor executor;
+    private final Node node;
+    private final Map<String, HttpClient> clusterClients;
 
     private static final Logger logger = Logger.getLogger(ServiceImpl.class.getName());
 
     /**
      * Async Service.
-     *
-     * @param port     HTTP connections
-     * @param dao      interface
-     * @param executor worker
      */
-    public ServiceImpl(final int port, final DAO dao, final Executor executor) throws IOException {
-        super(from(port));
+    private ServiceImpl(final HttpServerConfig config, @NotNull final DAO dao,
+                           @NotNull final Node node,
+                           @NotNull final Map<String, HttpClient> clusterClients) throws IOException {
+        super(config);
         this.dao = dao;
-        this.executor = executor;
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
+                new ThreadFactoryBuilder().setNameFormat("worker").build());
+        this.node = node;
+        this.clusterClients = clusterClients;
     }
 
-    private static HttpServerConfig from(final int port) {
-        final AcceptorConfig ac = new AcceptorConfig();
-        ac.port = port;
-        ac.reusePort = true;
-        ac.deferAccept = true;
-
-        final HttpServerConfig config = new HttpServerConfig();
-        config.acceptors = new AcceptorConfig[]{ac};
-        return config;
+    public static Service create(final int port, @NotNull final DAO dao,
+                                 @NotNull final Node node) throws IOException {
+        final var acceptor = new AcceptorConfig();
+        final var config = new HttpServerConfig();
+        acceptor.port = port;
+        config.acceptors = new AcceptorConfig[]{acceptor};
+        config.maxWorkers = Runtime.getRuntime().availableProcessors();
+        config.queueTime = 10;
+        Map<String, HttpClient> clusterClients = new HashMap<>();
+        for (final String it : node.getNodes()) {
+            if (!node.getId().equals(it) && !clusterClients.containsKey(it)) {
+                clusterClients.put(it, new HttpClient(new ConnectionString(it + "?timeout=100")));
+            }
+        }
+        return new ServiceImpl(config, dao, node, clusterClients);
     }
 
     @Override
@@ -86,6 +96,11 @@ public class ServiceImpl extends HttpServer implements Service {
         }
 
         final var key = ByteBuffer.wrap(id.getBytes(StandardCharsets.UTF_8));
+        final String keyClusterPartition = node.primaryFor(key);
+        if (!node.getId().equals(keyClusterPartition)) {
+            executeAsync(session, () -> forwardRequestTo(keyClusterPartition, request));
+            return;
+        }
         try {
             switch (request.getMethod()) {
                 case Request.METHOD_GET:
@@ -103,6 +118,15 @@ public class ServiceImpl extends HttpServer implements Service {
             }
         } catch (IOException e) {
             session.sendError(Response.INTERNAL_ERROR, e.getMessage());
+        }
+    }
+
+    private Response forwardRequestTo(@NotNull final String cluster, final Request request) throws IOException {
+
+        try {
+            return clusterClients.get(cluster).invoke(request);
+        } catch (InterruptedException | PoolException | HttpException e) {
+            throw new IOException("Forwarding failed for..." + e.getMessage());
         }
     }
 
