@@ -1,8 +1,15 @@
 package ru.mail.polis.service.yaroslav;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import one.nio.http.*;
+import one.nio.http.HttpServer;
+import one.nio.http.Response;
+import one.nio.http.HttpServerConfig;
+import one.nio.http.HttpClient;
+import one.nio.http.HttpSession;
+import one.nio.http.Request;
+import one.nio.http.HttpException;
 
+import one.nio.http.Path;
 import one.nio.net.ConnectionString;
 import one.nio.net.Socket;
 import one.nio.pool.PoolException;
@@ -49,9 +56,6 @@ public class ServiceImpl extends HttpServer implements Service {
         this.clusterClients = clusterClients;
     }
 
-    /**
-     * Create service.
-     */
     public static Service create(final int port, @NotNull final DAO dao,
                                  @NotNull final Node node) throws IOException {
         final var acceptor = new AcceptorConfig();
@@ -60,7 +64,7 @@ public class ServiceImpl extends HttpServer implements Service {
         config.acceptors = new AcceptorConfig[]{acceptor};
         config.maxWorkers = Runtime.getRuntime().availableProcessors();
         config.queueTime = 10;
-        final Map<String, HttpClient> clusterClients = new HashMap<>();
+        Map<String, HttpClient> clusterClients = new HashMap<>();
         for (final String it : node.getNodes()) {
             if (!node.getId().equals(it) && !clusterClients.containsKey(it)) {
                 clusterClients.put(it, new HttpClient(new ConnectionString(it + "?timeout=100")));
@@ -130,7 +134,7 @@ public class ServiceImpl extends HttpServer implements Service {
         try {
             return clusterClients.get(cluster).invoke(request);
         } catch (InterruptedException | PoolException | HttpException e) {
-            throw new IOException("Forwarding failed for..." + e.getMessage());
+            throw new IOException("Forwarding failed for...");
         }
     }
 
