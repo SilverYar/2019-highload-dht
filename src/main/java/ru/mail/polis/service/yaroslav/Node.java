@@ -5,11 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Node {
 
-    private final ArrayList<String> nodes;
+    private final List<String> nodes;
     private final String id;
 
     public Node(@NotNull final Set<String> nodes, @NotNull final String id) {
