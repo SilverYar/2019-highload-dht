@@ -56,6 +56,9 @@ public class ServiceImpl extends HttpServer implements Service {
         this.clusterClients = clusterClients;
     }
 
+    /**
+     * Create Async Service.
+     */
     public static Service create(final int port, @NotNull final DAO dao,
                                  @NotNull final Node node) throws IOException {
         final var acceptor = new AcceptorConfig();
@@ -64,7 +67,7 @@ public class ServiceImpl extends HttpServer implements Service {
         config.acceptors = new AcceptorConfig[]{acceptor};
         config.maxWorkers = Runtime.getRuntime().availableProcessors();
         config.queueTime = 10;
-        Map<String, HttpClient> clusterClients = new HashMap<>();
+        final Map<String, HttpClient> clusterClients = new HashMap<>();
         for (final String it : node.getNodes()) {
             if (!node.getId().equals(it) && !clusterClients.containsKey(it)) {
                 clusterClients.put(it, new HttpClient(new ConnectionString(it + "?timeout=100")));
@@ -79,7 +82,7 @@ public class ServiceImpl extends HttpServer implements Service {
     }
 
     /**
-     * Lifecheck.
+     * Life check.
      *
      * @return Response
      */
@@ -134,7 +137,7 @@ public class ServiceImpl extends HttpServer implements Service {
         try {
             return clusterClients.get(cluster).invoke(request);
         } catch (InterruptedException | PoolException | HttpException e) {
-            throw new IOException("Forwarding failed for...");
+            throw new IOException(e.getMessage());
         }
     }
 
