@@ -74,6 +74,39 @@ GET Async Service
 Requests/sec:  26375.89
 Transfer/sec:      1.74MB
 
+GET shardingRunning
+              4 threads and 4 connections
+              Thread calibration: mean lat.: 189.296ms, rate sampling interval: 950ms
+              Thread calibration: mean lat.: 187.323ms, rate sampling interval: 953ms
+              Thread calibration: mean lat.: 188.552ms, rate sampling interval: 946ms
+              Thread calibration: mean lat.: 188.990ms, rate sampling interval: 951ms
+              Thread Stats   Avg      Stdev     Max   +/- Stdev
+                Latency    26.39s     0.00us  26.38s     0.00%
+                Req/Sec     0.01      0.11     1.00    100.00%
+              Latency Distribution (HdrHistogram - Recorded Latency)
+             50.000%   26.39s
+             75.000%   26.39s
+             90.000%   26.39s
+             99.000%   26.39s
+             99.900%   26.39s
+             99.990%   26.39s
+             99.999%   26.39s
+            100.000%   26.39s
+
+              Detailed Percentile spectrum:
+                   Value   Percentile   TotalCount 1/(1-Percentile)
+
+               26394.623     0.000000            1         1.00
+               26394.623     1.000000            1          inf
+            #[Mean    =    26386.432, StdDeviation   =        0.000]
+            #[Max     =    26378.240, Total count    =            1]
+            #[Buckets =           27, SubBuckets     =         2048]
+            ----------------------------------------------------------
+              16385 requests in 30.04s, 1.20MB read
+              Socket errors: connect 0, read 4, write 0, timeout 51
+              Non-2xx or 3xx responses: 16385
+            Requests/sec:    545.38
+            Transfer/sec:     41.01KB
 ______________________________________________
 
 PUT service
@@ -148,6 +181,43 @@ Running 30s test @ http://localhost:8080
 Requests/sec:  11728.97
 Transfer/sec:    767.42KB
 
+PUT sharding
+Running 30s test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 2.457ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.203ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.331ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.232ms, rate sampling interval: 10ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.25ms  843.92us  20.32ms   87.70%
+    Req/Sec     1.32k   135.09     3.22k    86.17%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    1.19ms
+ 75.000%    1.58ms
+ 90.000%    1.95ms
+ 99.000%    2.66ms
+ 99.900%   14.05ms
+ 99.990%   18.99ms
+ 99.999%   19.82ms
+100.000%   20.33ms
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+       0.138     0.000000            1         1.00
+       0.503     0.100000        10006         1.11
+...
+      20.335     0.999991        99954    109226.67
+      20.335     1.000000        99954          inf
+#[Mean    =        1.254, StdDeviation   =        0.844]
+#[Max     =       20.320, Total count    =        99954]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  149976 requests in 30.00s, 9.58MB read
+Requests/sec:   4999.71
+Transfer/sec:    327.13KB
 
 Резюме.
 Из тестирования производительности HTTP сервера видно, что асинхронная реализация нашего сервера на запросах GET работает в два раза быстрее, а на PUT - становится чуть лучше. Из профилирования видно, что теперь появились новые потоки 'worker'-ы.
+
+PUT стал значительно быстрее, GET незначительно.

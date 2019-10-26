@@ -13,10 +13,8 @@
 !settings.gradle
 !checkstyle.xml
 !.codeclimate.yml
-!put.lua
-!get.lua
-!get.svg
-!put.svg
+!*.lua
+!*.svg
 !wrk_results.txt
 
 
