@@ -7,12 +7,10 @@ import one.nio.http.HttpServerConfig;
 import one.nio.http.HttpClient;
 import one.nio.http.HttpSession;
 import one.nio.http.Request;
-import one.nio.http.HttpException;
 
 import one.nio.http.Path;
 import one.nio.net.ConnectionString;
 import one.nio.net.Socket;
-import one.nio.pool.PoolException;
 import one.nio.server.AcceptorConfig;
 import org.jetbrains.annotations.NotNull;
 import ru.mail.polis.Record;
@@ -44,6 +42,7 @@ public class ServiceImpl extends HttpServer implements Service {
     private static final Logger logger = Logger.getLogger(ServiceImpl.class.getName());
     private static final String PROXY_HEADER = "X-OK-Proxy: True";
     private final RF defaultRF;
+
     /**
      * Async Service.
      */

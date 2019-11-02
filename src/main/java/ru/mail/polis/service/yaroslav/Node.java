@@ -26,11 +26,10 @@ public class Node {
         return new HashSet<>(this.nodes);
     }
 
-    String primaryFor(@NotNull final ByteBuffer key) {
-        return nodes.get((key.hashCode() & Integer.MAX_VALUE) % nodes.size());
-    }
-
-    public String[] replicas(final int count, @NotNull final ByteBuffer key) {
+    /**
+     * Get the clusters id.
+     */
+    String[] replicas(final int count, @NotNull final ByteBuffer key) {
         final String[] res = new String[count];
         int index = (key.hashCode() & Integer.MAX_VALUE) % nodes.size();
         for (int j = 0; j < count; j++) {

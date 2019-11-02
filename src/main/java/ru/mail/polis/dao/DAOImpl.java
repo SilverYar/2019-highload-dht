@@ -33,6 +33,9 @@ public final class DAOImpl implements DAO {
         return new MyIterator(iterator);
     }
 
+    /**
+     * Get record from Rocks.
+     */
     @NotNull
     public ValueTm getRecordWithTimestamp(@NotNull final ByteBuffer keys)
             throws IOException, NoSuchElementException {

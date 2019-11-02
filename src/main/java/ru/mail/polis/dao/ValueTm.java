@@ -37,8 +37,11 @@ public class ValueTm {
         }
     }
 
-    public ValueTm(final long timestamp, final ByteBuffer value,
-                           final RecordType type) {
+    /**
+     * Create the record.
+     */
+    private ValueTm(final long timestamp, final ByteBuffer value,
+                    final RecordType type) {
         this.timestamp = timestamp;
         this.recordType = type;
         this.value = value;
@@ -48,6 +51,9 @@ public class ValueTm {
         return new ValueTm(-1, null, RecordType.ABSENT);
     }
 
+    /**
+     * Convert the record.
+     */
     public static ValueTm fromBytes(@Nullable final byte[] bytes) {
         if (bytes == null) {
             return new ValueTm(-1, null, RecordType.ABSENT);
@@ -58,6 +64,9 @@ public class ValueTm {
         return new ValueTm(timestamp, buffer, recordType);
     }
 
+    /**
+     * Convert the record.
+     */
     public byte[] toBytes() {
         var valueLength = 0;
         if(isValue()) {
@@ -72,20 +81,16 @@ public class ValueTm {
         return byteBuff.array();
     }
 
-    public static ValueTm fromValue(@NotNull final ByteBuffer value,
-                                            final long timestamp) {
+    static ValueTm fromValue(@NotNull final ByteBuffer value,
+                             final long timestamp) {
         return new ValueTm(timestamp, value, RecordType.VALUE);
     }
 
-    public static boolean isEmptyRecord(@NotNull final byte[] bytes) {
-        return bytes[0] != RecordType.VALUE.value;
-    }
-
-    public static ValueTm tombstone(final long timestamp) {
+    static ValueTm tombstone(final long timestamp) {
         return new ValueTm(timestamp, null, RecordType.DELETED);
     }
 
-    public long getTimestamp() {
+    private long getTimestamp() {
         return timestamp;
     }
 
@@ -101,6 +106,9 @@ public class ValueTm {
         return recordType == RecordType.DELETED;
     }
 
+    /**
+     * Get value.
+     */
     public ByteBuffer getValue() throws IOException {
         if (!isValue()) {
             throw new IOException("Empty record has no value",
@@ -109,6 +117,9 @@ public class ValueTm {
         return value;
     }
 
+    /**
+     * Get value as bytes.
+     */
     public byte[] getValueAsBytes() throws IOException {
         final var val = getValue().duplicate();
         final byte[] ret = new byte[val.remaining()];
@@ -116,6 +127,9 @@ public class ValueTm {
         return ret;
     }
 
+    /**
+     * Merge multiple records.
+     */
     public static ValueTm merge(final List<ValueTm> responses) {
         if (responses.size() == 1) return responses.get(0);
         else {
