@@ -17,6 +17,7 @@ import one.nio.server.AcceptorConfig;
 import org.jetbrains.annotations.NotNull;
 import ru.mail.polis.Record;
 import ru.mail.polis.dao.DAO;
+import ru.mail.polis.dao.DAOImpl;
 import ru.mail.polis.dao.NoSuchElementExceptionLite;
 import ru.mail.polis.service.Service;
 
@@ -34,14 +35,15 @@ import static java.util.logging.Level.WARNING;
 
 public class ServiceImpl extends HttpServer implements Service {
     @NotNull
-    private final DAO dao;
+    private final DAOImpl dao;
     @NotNull
     private final Executor executor;
     private final Node node;
     private final Map<String, HttpClient> clusterClients;
-
+    private final int clusterSize;
     private static final Logger logger = Logger.getLogger(ServiceImpl.class.getName());
-
+    private static final String PROXY_HEADER = "X-OK-Proxy: True";
+    private final RF defaultRF;
     /**
      * Async Service.
      */
@@ -49,11 +51,13 @@ public class ServiceImpl extends HttpServer implements Service {
                            @NotNull final Node node,
                            @NotNull final Map<String, HttpClient> clusterClients) throws IOException {
         super(config);
-        this.dao = dao;
+        this.dao = (DAOImpl)dao;
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
                 new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
         this.node = node;
         this.clusterClients = clusterClients;
+        this.defaultRF = new RF(node.getNodes().size() / 2 + 1, node.getNodes().size());
+        this.clusterSize = node.getNodes().size();
     }
 
     /**
@@ -106,38 +110,37 @@ public class ServiceImpl extends HttpServer implements Service {
             return;
         }
 
+        boolean proxied = false;
+        if (request.getHeader(PROXY_HEADER) != null) {
+            proxied = true;
+        }
+        final String replicas = request.getParameter("replicas");
+        final RF rf = RF.calculateRF(replicas, session, defaultRF, clusterSize);
         final var key = ByteBuffer.wrap(id.getBytes(StandardCharsets.UTF_8));
-        final String keyClusterPartition = node.primaryFor(key);
-        if (!node.getId().equals(keyClusterPartition)) {
-            executeAsync(session, () -> forwardRequestTo(keyClusterPartition, request));
-            return;
-        }
-        try {
-            switch (request.getMethod()) {
-                case Request.METHOD_GET:
-                    executeAsync(session, () -> get(key));
-                    break;
-                case Request.METHOD_PUT:
-                    executeAsync(session, () -> put(key, request));
-                    break;
-                case Request.METHOD_DELETE:
-                    executeAsync(session, () -> delete(key));
-                    break;
-                default:
-                    session.sendError(Response.METHOD_NOT_ALLOWED, "Wrong method");
-                    break;
+        final boolean proxiedF = proxied;
+        if (proxied || node.getNodes().size() > 1) {
+            final Coordinators clusterCoordinator = new Coordinators(node, clusterClients, dao, proxiedF);
+            final String[] replicaClusters = proxied ? new String[]{node.getId()} : node.replicas(rf.getFrom(), key);
+            clusterCoordinator.coordinateRequest(replicaClusters, request, rf.getAck(), session);
+        } else {
+            try {
+                switch (request.getMethod()) {
+                    case Request.METHOD_GET:
+                        executeAsync(session, () -> get(key));
+                        break;
+                    case Request.METHOD_PUT:
+                        executeAsync(session, () -> put(key, request));
+                        break;
+                    case Request.METHOD_DELETE:
+                        executeAsync(session, () -> delete(key));
+                        break;
+                    default:
+                        session.sendError(Response.METHOD_NOT_ALLOWED, "Wrong method");
+                        break;
+                }
+            } catch (IOException e) {
+                session.sendError(Response.INTERNAL_ERROR, e.getMessage());
             }
-        } catch (IOException e) {
-            session.sendError(Response.INTERNAL_ERROR, e.getMessage());
-        }
-    }
-
-    private Response forwardRequestTo(@NotNull final String cluster, final Request request) throws IOException {
-
-        try {
-            return clusterClients.get(cluster).invoke(request);
-        } catch (InterruptedException | PoolException | HttpException e) {
-            throw new IOException("forwardRequestTo", e);
         }
     }
 

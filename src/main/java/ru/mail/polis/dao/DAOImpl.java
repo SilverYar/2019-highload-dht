@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static java.lang.Byte.MIN_VALUE;
 import static org.rocksdb.BuiltinComparator.BYTEWISE_COMPARATOR;
@@ -30,6 +31,46 @@ public final class DAOImpl implements DAO {
         final var iterator = db.newIterator();
         iterator.seek(convertSub(from));
         return new MyIterator(iterator);
+    }
+
+    @NotNull
+    public ValueTm getRecordWithTimestamp(@NotNull final ByteBuffer keys)
+            throws IOException, NoSuchElementException {
+        try {
+            final byte[] packedKey = convertSub(keys);
+            final byte[] valueByteArray = db.get(packedKey);
+            return ValueTm.fromBytes(valueByteArray);
+        } catch (RocksDBException exception) {
+            throw new IOException("Error while get", exception);
+        }
+    }
+
+    public void upsertRecordWithTimestamp(@NotNull final ByteBuffer keys,
+                                          @NotNull final ByteBuffer values) throws IOException {
+        try {
+            final var record = ValueTm.fromValue(values, System.currentTimeMillis());
+            final byte[] packedKey = convertSub(keys);
+            final byte[] arrayValue = record.toBytes();
+            db.put(packedKey, arrayValue);
+        } catch (RocksDBException e) {
+            throw new IOException("Upsert method exception!", e);
+        }
+    }
+
+    /**
+     * Delete record from DB.
+     *
+     * @param key to define key
+     */
+    public void removeRecordWithTimestamp(@NotNull final ByteBuffer key) throws IOException {
+        try {
+            final byte[] packedKey = convertSub(key);
+            final var record = ValueTm.tombstone(System.currentTimeMillis());
+            final byte[] arrayValue = record.toBytes();
+            db.put(packedKey, arrayValue);
+        } catch (RocksDBException e) {
+            throw new IOException("Remove method exception!", e);
+        }
     }
 
     @NotNull
