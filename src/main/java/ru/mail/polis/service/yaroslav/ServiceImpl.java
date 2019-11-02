@@ -15,6 +15,7 @@ import one.nio.net.Socket;
 import one.nio.pool.PoolException;
 import one.nio.server.AcceptorConfig;
 import org.jetbrains.annotations.NotNull;
+import org.rocksdb.Transaction;
 import ru.mail.polis.Record;
 import ru.mail.polis.dao.DAO;
 import ru.mail.polis.dao.NoSuchElementExceptionLite;
@@ -31,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 
 public class ServiceImpl extends HttpServer implements Service {
     @NotNull
@@ -51,7 +53,7 @@ public class ServiceImpl extends HttpServer implements Service {
         super(config);
         this.dao = dao;
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
-                new ThreadFactoryBuilder().setNameFormat("worker").build());
+                new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
         this.node = node;
         this.clusterClients = clusterClients;
     }
@@ -101,7 +103,7 @@ public class ServiceImpl extends HttpServer implements Service {
             try {
                 session.sendResponse(new Response(Response.BAD_REQUEST, Response.EMPTY));
             } catch (IOException e) {
-                logger.log(INFO, "something has gone terribly wrong", e);
+                logger.log(WARNING, "something has gone terribly wrong", e);
             }
             return;
         }
@@ -164,7 +166,7 @@ public class ServiceImpl extends HttpServer implements Service {
                 try {
                     session.sendError(Response.INTERNAL_ERROR, e.getMessage());
                 } catch (IOException ex) {
-                    logger.log(INFO, "something has gone terribly wrong", e);
+                    logger.log(WARNING,  e.getMessage());
                 }
             }
         });
