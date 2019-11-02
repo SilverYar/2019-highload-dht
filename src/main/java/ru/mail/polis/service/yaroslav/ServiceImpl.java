@@ -15,7 +15,6 @@ import one.nio.net.Socket;
 import one.nio.pool.PoolException;
 import one.nio.server.AcceptorConfig;
 import org.jetbrains.annotations.NotNull;
-import org.rocksdb.Transaction;
 import ru.mail.polis.Record;
 import ru.mail.polis.dao.DAO;
 import ru.mail.polis.dao.NoSuchElementExceptionLite;
@@ -31,7 +30,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 
 public class ServiceImpl extends HttpServer implements Service {
@@ -166,7 +164,7 @@ public class ServiceImpl extends HttpServer implements Service {
                 try {
                     session.sendError(Response.INTERNAL_ERROR, e.getMessage());
                 } catch (IOException ex) {
-                    logger.log(WARNING,  e.getMessage());
+                    logger.log(WARNING, e.getMessage());
                 }
             }
         });
