@@ -47,10 +47,10 @@ public class ServiceImpl extends HttpServer implements Service {
      * Async Service.
      */
     private ServiceImpl(final HttpServerConfig config, @NotNull final DAO dao,
-                           @NotNull final Node node,
-                           @NotNull final Map<String, HttpClient> clusterClients) throws IOException {
+                        @NotNull final Node node,
+                        @NotNull final Map<String, HttpClient> clusterClients) throws IOException {
         super(config);
-        this.dao = (DAOImpl)dao;
+        this.dao = (DAOImpl) dao;
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
                 new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
         this.node = node;

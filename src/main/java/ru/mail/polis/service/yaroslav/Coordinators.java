@@ -35,10 +35,10 @@ public class Coordinators {
     /**
      * Create the cluster coordinator instance.
      *
-     * @param nodes to specify cluster nodes
+     * @param nodes          to specify cluster nodes
      * @param clusterClients to specify the HttpClients of the cluster
-     * @param dao to specify current DAO
-     * @param proxied to specify if the request is sent by proxying
+     * @param dao            to specify current DAO
+     * @param proxied        to specify if the request is sent by proxying
      */
     public Coordinators(final Node nodes, final Map<String, HttpClient> clusterClients,
                         @NotNull final DAO dao, final boolean proxied) {
@@ -52,9 +52,9 @@ public class Coordinators {
      * Coordinate the delete among all clusters.
      *
      * @param replicaNodes to define the nodes where to create replicas
-     * @param rqst to define request
-     * @param acks to specify the amount of acks needed
-     * @param proxied to specify if the request is sent by proxying
+     * @param rqst         to define request
+     * @param acks         to specify the amount of acks needed
+     * @param proxied      to specify if the request is sent by proxying
      * @return Response value
      */
     public Response coordinateDelete(final String[] replicaNodes, final Request rqst,
@@ -91,9 +91,9 @@ public class Coordinators {
      * Coordinate the put among all clusters.
      *
      * @param replicaNodes to define the nodes where to create replicas
-     * @param rqst to define request
-     * @param acks to specify the amount of acks needed
-     * @param proxied to specify if the request is sent by proxying
+     * @param rqst         to define request
+     * @param acks         to specify the amount of acks needed
+     * @param proxied      to specify if the request is sent by proxying
      * @return Response value
      */
     public Response coordinatePut(final String[] replicaNodes, final Request rqst,
@@ -129,9 +129,9 @@ public class Coordinators {
      * Coordinate the get among all clusters.
      *
      * @param replicaNodes to define the nodes where to create replicas
-     * @param rqst to define request
-     * @param acks to specify the amount of acks needed
-     * @param proxied to specify if the request is sent by proxying
+     * @param rqst         to define request
+     * @param acks         to specify the amount of acks needed
+     * @param proxied      to specify if the request is sent by proxying
      * @return Response value
      */
     public Response coordinateGet(final String[] replicaNodes, final Request rqst,
@@ -173,8 +173,8 @@ public class Coordinators {
     private Response processResponses(final String[] replicaNodes,
                                       final List<ValueTm> responses) throws IOException {
         final ValueTm mergedResp = ValueTm.merge(responses);
-        if(mergedResp.isValue()) {
-            if(!proxied && replicaNodes.length == 1) {
+        if (mergedResp.isValue()) {
+            if (!proxied && replicaNodes.length == 1) {
                 return new Response(Response.OK, mergedResp.getValueAsBytes());
             } else if (proxied && replicaNodes.length == 1) {
                 return new Response(Response.OK, mergedResp.toBytes());
@@ -189,7 +189,7 @@ public class Coordinators {
     }
 
     private void putWithTimestampMethodWrapper(final ByteBuffer key, final Request request) throws IOException {
-        dao.upsertRecordWithTimestamp(key, ByteBuffer.wrap(request.getBody()));
+        dao.upsetRecordWithTimestamp(key, ByteBuffer.wrap(request.getBody()));
     }
 
     private void deleteWithTimestampMethodWrapper(final ByteBuffer key) throws IOException {
@@ -208,7 +208,7 @@ public class Coordinators {
 
     private byte[] copyAndExtractWithTimestampFromByteBuffer(@NotNull final ByteBuffer key) throws IOException {
         final ValueTm res = dao.getRecordWithTimestamp(key);
-        if(res.isEmpty()){
+        if (res.isEmpty()) {
             throw new NoSuchElementException("Element not found!");
         }
         return res.toBytes();
@@ -218,9 +218,9 @@ public class Coordinators {
      * Coordinate the request among all clusters.
      *
      * @param replicaClusters to define the nodes where to create replicas
-     * @param request to define request
-     * @param acks to specify the amount of acks needed
-     * @param session to specify the session where to output messages
+     * @param request         to define request
+     * @param acks            to specify the amount of acks needed
+     * @param session         to specify the session where to output messages
      */
     public void coordinateRequest(final String[] replicaClusters, final Request request,
                                   final int acks, final HttpSession session) throws IOException {

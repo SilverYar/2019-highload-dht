@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 
-public class ValueTm {
+final public class ValueTm {
 
     private final long timestamp;
     private final ByteBuffer value;
@@ -69,7 +69,7 @@ public class ValueTm {
      */
     public byte[] toBytes() {
         var valueLength = 0;
-        if(isValue()) {
+        if (isValue()) {
             valueLength = value.remaining();
         }
         final var byteBuff = ByteBuffer.allocate(1 + Long.BYTES + valueLength);
