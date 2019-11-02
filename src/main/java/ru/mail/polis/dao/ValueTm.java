@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 
-final public class ValueTm {
+public final class ValueTm {
 
     private final long timestamp;
     private final ByteBuffer value;

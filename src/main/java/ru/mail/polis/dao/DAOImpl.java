@@ -51,7 +51,7 @@ public final class DAOImpl implements DAO {
     /**
      * Put record in DB.
      */
-    public void upsetRecordWithTimestamp(@NotNull final ByteBuffer keys,
+    public void upsertRecordWithTimestamp(@NotNull final ByteBuffer keys,
                                          @NotNull final ByteBuffer values) throws IOException {
         try {
             final var record = ValueTm.fromValue(values, System.currentTimeMillis());
