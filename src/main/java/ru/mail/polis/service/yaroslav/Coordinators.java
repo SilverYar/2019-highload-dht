@@ -184,12 +184,12 @@ public class Coordinators {
         } else if (mergedResp.isDeleted()) {
             return new Response(Response.NOT_FOUND, mergedResp.toBytes());
         } else {
-            return new Response(Response.NOT_FOUND, Response.EMPTY);
+            return nesw Response(Response.NOT_FOUND, Response.EMPTY);
         }
     }
 
     private void putWithTimestampMethodWrapper(final ByteBuffer key, final Request request) throws IOException {
-        dao.upsetRecordWithTimestamp(key, ByteBuffer.wrap(request.getBody()));
+        dao.upsertRecordWithTimestamp(key, ByteBuffer.wrap(request.getBody()));
     }
 
     private void deleteWithTimestampMethodWrapper(final ByteBuffer key) throws IOException {
