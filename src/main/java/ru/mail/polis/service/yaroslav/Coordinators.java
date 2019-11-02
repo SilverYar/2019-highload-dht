@@ -184,7 +184,7 @@ public class Coordinators {
         } else if (mergedResp.isDeleted()) {
             return new Response(Response.NOT_FOUND, mergedResp.toBytes());
         } else {
-            return nesw Response(Response.NOT_FOUND, Response.EMPTY);
+            return new Response(Response.NOT_FOUND, Response.EMPTY);
         }
     }
 
