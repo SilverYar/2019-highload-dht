@@ -1,0 +1,80 @@
+GET sharding
+Running 30s test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 3.557ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 3.492ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 3.519ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 3.503ms, rate sampling interval: 10ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.27ms  611.03us   8.83ms   67.96%
+    Req/Sec     1.32k   128.34     2.11k    81.83%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    1.23ms
+ 75.000%    1.67ms
+ 90.000%    2.06ms
+ 99.000%    2.59ms
+ 99.900%    5.43ms
+ 99.990%    7.52ms
+ 99.999%    8.42ms
+100.000%    8.84ms
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+       0.104     0.000000            1         1.00
+       0.501     0.100000        10006         1.11
+       0.754     0.200000        20023         1.25
+       0.923     0.300000        30006         1.43
+...
+       8.423     0.999988        99968     81920.00
+       8.423     0.999989        99968     93622.86
+       8.839     0.999991        99969    109226.67
+       8.839     1.000000        99969          inf
+#[Mean    =        1.272, StdDeviation   =        0.611]
+#[Max     =        8.832, Total count    =        99969]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  149990 requests in 30.00s, 9.87MB read
+  Non-2xx or 3xx responses: 149990
+Requests/sec:   5000.08
+Transfer/sec:    336.92KB
+
+______________________________________________
+PUT sharding
+Running 30s test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 2.627ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.636ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.651ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.614ms, rate sampling interval: 10ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.36ms    1.23ms  23.82ms   97.35%
+    Req/Sec     1.32k   193.69     3.67k    84.18%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    1.22ms
+ 75.000%    1.63ms
+ 90.000%    2.05ms
+ 99.000%    6.76ms
+ 99.900%   16.59ms
+ 99.990%   22.21ms
+ 99.999%   23.47ms
+100.000%   23.84ms
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+       0.139     0.000000            1         1.00
+       0.514     0.100000        10013         1.11
+       0.731     0.200000        20014         1.25
+...
+      23.471     0.999988        99970     81920.00
+      23.471     0.999989        99970     93622.86
+      23.839     0.999991        99971    109226.67
+      23.839     1.000000        99971          inf
+#[Mean    =        1.364, StdDeviation   =        1.235]
+#[Max     =       23.824, Total count    =        99971]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  149993 requests in 30.00s, 9.58MB read
+Requests/sec:   5000.00
+Transfer/sec:    327.15KB

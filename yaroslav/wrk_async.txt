@@ -1,0 +1,77 @@
+GET Async Service
+
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 496.545ms, rate sampling interval: 2027ms
+  Thread calibration: mean lat.: 484.539ms, rate sampling interval: 1970ms
+  Thread calibration: mean lat.: 839.059ms, rate sampling interval: 3389ms
+  Thread calibration: mean lat.: 993.764ms, rate sampling interval: 3991ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.56s     1.53s    6.21s    63.22%
+    Req/Sec     6.74k     1.11k    8.80k    62.07%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    2.33s
+ 75.000%    2.83s
+ 90.000%    5.23s
+ 99.000%    6.11s
+ 99.900%    6.22s
+ 99.990%    6.22s
+ 99.999%    6.22s
+100.000%    6.22s
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+     614.399     0.000000           28         1.00
+     852.991     0.100000        53383         1.11
+...
+    6217.727     0.998633       532205       731.43
+    6217.727     1.000000       532205          inf
+#[Mean    =     2560.233, StdDeviation   =     1530.324]
+#[Max     =     6213.632, Total count    =       532205]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  791244 requests in 30.00s, 52.07MB read
+  Non-2xx or 3xx responses: 791244
+Requests/sec:  26375.89
+Transfer/sec:      1.74MB
+
+______________________________________________
+PUT Async Service
+Running 30s test @ http://localhost:8080
+  4 threads and 4 connections
+  Thread calibration: mean lat.: 2413.554ms, rate sampling interval: 6991ms
+  Thread calibration: mean lat.: 2312.697ms, rate sampling interval: 6746ms
+  Thread calibration: mean lat.: 2215.106ms, rate sampling interval: 6512ms
+  Thread calibration: mean lat.: 2199.910ms, rate sampling interval: 6488ms
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    10.29s     5.15s   18.69s    52.19%
+    Req/Sec     1.87k   472.16     2.47k    30.00%
+  Latency Distribution (HdrHistogram - Recorded Latency)
+ 50.000%    9.82s
+ 75.000%   15.20s
+ 90.000%   17.56s
+ 99.000%   18.61s
+ 99.900%   18.69s
+ 99.990%   18.71s
+ 99.999%   18.71s
+100.000%   18.71s
+
+  Detailed Percentile spectrum:
+       Value   Percentile   TotalCount 1/(1-Percentile)
+
+    3440.639     0.000000           54         1.00
+    3715.071     0.100000        15497         1.11
+...
+   18710.527     0.999878       154678      8192.00
+   18710.527     1.000000       154678          inf
+#[Mean    =    10292.113, StdDeviation   =     5150.796]
+#[Max     =    18694.144, Total count    =       154678]
+#[Buckets =           27, SubBuckets     =         2048]
+----------------------------------------------------------
+  351844 requests in 30.00s, 22.48MB read
+Requests/sec:  11728.97
+Transfer/sec:    767.42KB
+
+Резюме.
+Из тестирования производительности HTTP сервера видно, что асинхронная реализация нашего сервера на запросах GET работает в два раза быстрее, а на PUT - становится чуть лучше. Из профилирования видно, что теперь появились новые потоки 'worker'-ы.
+PUT стал значительно быстрее, GET незначительно.

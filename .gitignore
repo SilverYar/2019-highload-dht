@@ -15,7 +15,7 @@
 !.codeclimate.yml
 !*.lua
 !*.svg
-!wrk_results.txt
+!*.txt
 
 
 # ...even if they are in subdirectories
