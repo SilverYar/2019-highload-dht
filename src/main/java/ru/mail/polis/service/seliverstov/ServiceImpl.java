@@ -1,4 +1,4 @@
-package ru.mail.polis.service.yaroslav;
+package ru.mail.polis.service.seliverstov;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import one.nio.http.HttpServer;

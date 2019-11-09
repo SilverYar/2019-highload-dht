@@ -1,4 +1,4 @@
-package ru.mail.polis.service.yaroslav;
+package ru.mail.polis.service.seliverstov;
 
 import org.jetbrains.annotations.NotNull;
 
