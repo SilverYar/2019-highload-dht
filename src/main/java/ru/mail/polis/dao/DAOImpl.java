@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static java.lang.Byte.MIN_VALUE;
 import static org.rocksdb.BuiltinComparator.BYTEWISE_COMPARATOR;
@@ -46,6 +47,19 @@ public final class DAOImpl implements DAO {
         }
     }
 
+    /**
+     * Get record from Rocks.
+     */
+    @NotNull
+    public ValueTm getWithTS(@NotNull final ByteBuffer keys)
+            throws IOException, NoSuchElementException {
+        try {
+            return ValueTm.fromBytes(db.get(convertSub(keys)));
+        } catch (RocksDBException exception) {
+            throw new IOException("GET TS error", exception);
+        }
+    }
+
     @Override
     public void upsert(@NotNull final ByteBuffer key, @NotNull final ByteBuffer value) throws IOException {
         try {
@@ -55,12 +69,38 @@ public final class DAOImpl implements DAO {
         }
     }
 
+    /**
+     * Put record in DB.
+     */
+    public void upsertWithTS(@NotNull final ByteBuffer keys,
+                             @NotNull final ByteBuffer values) throws IOException {
+        try {
+            db.put(convertSub(keys), ValueTm.fromValue(values, System.currentTimeMillis()).toBytes());
+        } catch (RocksDBException e) {
+            throw new IOException("UPDATE/INSERT TS error", e);
+        }
+    }
+
     @Override
     public void remove(@NotNull final ByteBuffer key) throws IOException {
         try {
             db.delete(convertSub(key));
         } catch (RocksDBException exception) {
             throw new IOException(exception);
+        }
+    }
+
+    /**
+     * Delete record from DB.
+     */
+    public void removeWithTS(@NotNull final ByteBuffer key) throws IOException {
+        try {
+            final byte[] packedKey = convertSub(key);
+            final var record = ValueTm.tombstone(System.currentTimeMillis());
+            final byte[] arrayValue = record.toBytes();
+            db.put(packedKey, arrayValue);
+        } catch (RocksDBException e) {
+            throw new IOException("DELETE TS error", e);
         }
     }
 
@@ -136,7 +176,7 @@ public final class DAOImpl implements DAO {
         }
     }
 
-    static DAO init(final File data) throws IOException {
+    static DAO create(final File data) throws IOException {
         RocksDB.loadLibrary();
         try {
             final var options = new Options()

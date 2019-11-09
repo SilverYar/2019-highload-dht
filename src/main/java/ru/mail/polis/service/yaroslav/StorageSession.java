@@ -1,4 +1,4 @@
-package ru.mail.polis.service.seliverstov;
+package ru.mail.polis.service.yaroslav;
 
 import one.nio.http.HttpServer;
 import one.nio.http.HttpSession;
@@ -12,19 +12,19 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
-final class StorageSession extends HttpSession {
+public final class StorageSession extends HttpSession {
     private static final byte[] CRLF = "\r\n".getBytes(StandardCharsets.UTF_8);
     private static final byte LF = '\n';
     private static final byte[] EMPTY_CHUNK = "0\r\n\r\n".getBytes(StandardCharsets.UTF_8);
 
     private Iterator<Record> records;
 
-    StorageSession(@NotNull final Socket socket,
-                   @NotNull final HttpServer server) {
+    public StorageSession(@NotNull final Socket socket,
+                          @NotNull final HttpServer server) {
         super(socket, server);
     }
 
-    void stream(@NotNull final Iterator<Record> records) throws IOException {
+    public void stream(@NotNull final Iterator<Record> records) throws IOException {
         this.records = records;
 
         final Response response = new Response(Response.OK);

@@ -1,4 +1,4 @@
-package ru.mail.polis.service.seliverstov;
+package ru.mail.polis.service.yaroslav;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,15 +18,19 @@ public class Node {
         this.id = id;
     }
 
-    String getId() {
+    public String primaryFor(@NotNull final ByteBuffer key) {
+        return nodes.get((key.hashCode() & Integer.MAX_VALUE) % nodes.size());
+    }
+
+    public String getId() {
         return this.id;
     }
 
-    Set<String> getNodes() {
+    public Set<String> getNodes() {
         return new HashSet<>(this.nodes);
     }
 
-    String primaryFor(@NotNull final ByteBuffer key) {
-        return nodes.get((key.hashCode() & Integer.MAX_VALUE) % nodes.size());
+    String getNode(final int index) {
+        return nodes.get(index);
     }
 }
