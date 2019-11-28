@@ -215,7 +215,7 @@ public class Coordinators {
         } catch (IOException e) {
             final var message = e.getMessage() == null 
                                         ? e.getClass().getName() 
-                                        : e.getmessage;
+                                        : e.getMessage;
             session.sendError(Response.GATEWAY_TIMEOUT, message);
         }
     }
