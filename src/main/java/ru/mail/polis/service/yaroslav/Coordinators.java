@@ -213,7 +213,10 @@ public class Coordinators {
                     return;
             }
         } catch (IOException e) {
-            session.sendError(Response.GATEWAY_TIMEOUT, e.getMessage());
+            final var message = e.getMessage() == null 
+                                        ? e.getClass().getName() 
+                                        : e.getmessage;
+            session.sendError(Response.GATEWAY_TIMEOUT, mesage);
         }
     }
 }
