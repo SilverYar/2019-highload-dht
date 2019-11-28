@@ -37,7 +37,6 @@ public final class AmmoGenerator {
         return keys;
     }
 
-
     private static int getRandNumbInRange(final int min, final int max) {
         final Random r = new Random();
         return r.ints(min, max).findFirst().getAsInt();
@@ -63,7 +62,6 @@ public final class AmmoGenerator {
             putKeyVal(key, value);
         }
     }
-
 
     private static void generateExistGets(final int amount) throws IOException {
         final List<String> keys = getUniqkeys(amount);
