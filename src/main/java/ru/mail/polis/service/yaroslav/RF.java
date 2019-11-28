@@ -9,17 +9,19 @@ import java.util.List;
 
 import static one.nio.http.Response.BAD_REQUEST;
 
-class RF {
-    private final int ack, from;
+public class RF {
+    private final int ack;
+    private final int from;
 
-    RF(final int ack, final int from) {
+    public RF(final int ack, final int from) {
         this.ack = ack;
         this.from = from;
     }
 
     @NotNull
     private static RF of(@NotNull final String value) {
-        final List<String> values = Splitter.on('/').splitToList( value.replace("=", ""));
+        final String rem = value.replace("=", "");
+        final List<String> values = Splitter.on('/').splitToList(rem);
         if (values.size() != 2) {
             throw new IllegalArgumentException("Wrong replica factor:" + value);
         }
@@ -29,32 +31,32 @@ class RF {
     /**
      * Calculate the RF value.
      *
-     * @param replicas    to define the amount of replicas needed
-     * @param session     to output responses
-     * @param defaultRF   to specify the default RF
+     * @param replicas to define the amount of replicas needed
+     * @param session to output responses
+     * @param defaultRF to specify the default RF
      * @param clusterSize to specify the size of cluster
      * @return RF value
      */
-    static RF calculateRF(final String replicas, @NotNull final HttpSession session,
-                          final RF defaultRF, final int clusterSize) throws IOException {
+    public static RF calculateRF(final String replicas, @NotNull final HttpSession session,
+                                 final RF defaultRF, final int clusterSize) throws IOException {
         RF rf = null;
         try {
             rf = replicas == null ? defaultRF : RF.of(replicas);
             if (rf.ack < 1 || rf.from < rf.ack || rf.from > clusterSize) {
-                throw new IllegalArgumentException("From too big");
+                throw new IllegalArgumentException("From is too big!");
             }
             return rf;
         } catch (IllegalArgumentException e) {
-            session.sendError(BAD_REQUEST, "Wrong RF");
+            session.sendError(BAD_REQUEST, "Wrong RF!");
         }
         return rf;
     }
 
-    int getFrom() {
+    public int getFrom() {
         return from;
     }
 
-    int getAck() {
+    public int getAck() {
         return ack;
     }
 }

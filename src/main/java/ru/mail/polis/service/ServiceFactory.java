@@ -17,15 +17,14 @@
 package ru.mail.polis.service;
 
 import java.io.IOException;
+
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
 import ru.mail.polis.dao.DAO;
-
 import ru.mail.polis.service.yaroslav.Node;
-import ru.mail.polis.service.yaroslav.ServiceImpl;
-
+import ru.mail.polis.service.yaroslav.AsyncHttpService;
 
 /**
  * Constructs {@link Service} instances.
@@ -60,8 +59,7 @@ public final class ServiceFactory {
             throw new IllegalArgumentException("Port out of range");
         }
 
-        final Node node = new Node(topology, "http://localhost:" + port);
-
-        return ServiceImpl.create(port, dao, node);
+        final Node nodes = new Node(topology, "http://localhost:" + port);
+        return AsyncHttpService.create(port, dao, nodes);
     }
 }

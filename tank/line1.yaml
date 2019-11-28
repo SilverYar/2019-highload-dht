@@ -1,0 +1,11 @@
+phantom:
+  address: 127.0.0.1:8080
+  ammofile: stage7_task1.ammo
+  load_profile:
+    load_type: rps
+    schedule: line(1, 2000, 3m)
+telegraf:
+  enabled: false
+overload:
+  enabled: true
+  token_file: token.txt

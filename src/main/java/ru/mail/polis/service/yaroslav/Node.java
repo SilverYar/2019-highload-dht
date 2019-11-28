@@ -18,19 +18,55 @@ public class Node {
         this.id = id;
     }
 
-    public String primaryFor(@NotNull final ByteBuffer key) {
-        return nodes.get((key.hashCode() & Integer.MAX_VALUE) % nodes.size());
-    }
-
-    public String getId() {
-        return this.id;
+    /**
+     * Check the cluster to which the key belongs to.
+     *
+     * @param key to search for a specified key
+     * @return id of the cluster node to which the key belongs
+     */
+    public String keyBelongsTo(@NotNull final ByteBuffer key) {
+        final int hashCode = key.hashCode();
+        final int node = (hashCode & Integer.MAX_VALUE) % nodes.size();
+        return nodes.get(node);
     }
 
     public Set<String> getNodes() {
         return new HashSet<>(this.nodes);
     }
 
-    String getNode(final int index) {
-        return nodes.get(index);
+    /**
+     * Get all the ports to which the cluster is bound.
+     *
+     * @return all of the ports
+     */
+    public Set<Integer> getPorts() {
+        final Set<String> res = getNodes();
+        final Set<Integer> ret = new HashSet<>();
+        for (String it : res) {
+            it = it.replaceAll("\\D+","");
+            ret.add(Integer.parseInt(it));
+        }
+        return ret;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    /**
+     * Get the clusters ids where the replicas will be created.
+     *
+     * @param count the amount of replicas
+     * @param key key id
+     * @return ids of the clusters to create replicas
+     */
+    public String[] replicas(final int count, @NotNull final ByteBuffer key) {
+        final String[] res = new String[count];
+        int index = (key.hashCode() & Integer.MAX_VALUE) % nodes.size();
+        for (int j = 0; j < count; j++) {
+            res[j] = nodes.get(index);
+            index = (index + 1) % nodes.size();
+        }
+        return res;
     }
 }

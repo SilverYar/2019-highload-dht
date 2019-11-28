@@ -36,7 +36,7 @@ public final class Server {
     private Server() {
         // Not instantiable
     }
-
+    
     /**
      * Starts a single server node.
      *

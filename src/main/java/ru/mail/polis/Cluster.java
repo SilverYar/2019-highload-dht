@@ -41,7 +41,7 @@ public final class Cluster {
     private Cluster() {
         // Not instantiable
     }
-
+    
     /**
      * Starts a cluster of 3 nodes.
      *
