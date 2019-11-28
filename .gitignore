@@ -16,6 +16,7 @@
 !*.lua
 !*.svg
 !*.txt
+!tank/*
 
 
 # ...even if they are in subdirectories
