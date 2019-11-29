@@ -84,7 +84,8 @@ public class AsyncHttpService extends HttpServer implements Service {
         config.queueTime = 10;
         final Map<String, HttpClient> clusterClients = new HashMap<>();
         for (final Integer it : nodes.getPorts()) {
-            if (!nodes.getId().equals(localhost + it) && !clusterClients.containsKey(localhost + it)) {
+            if (!nodes.getId().equals(localhost + it) && 
+                !clusterClients.containsKey(localhost + it)) {
                 final HttpClient client = HttpClient.newBuilder()
                         .version(Version.HTTP_2)
                         .followRedirects(Redirect.NEVER)
