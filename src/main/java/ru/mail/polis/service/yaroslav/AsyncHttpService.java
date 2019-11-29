@@ -48,9 +48,12 @@ public class AsyncHttpService extends HttpServer implements Service {
      * @param nodes to represent cluster nodes
      * @param clusterClients initialized cluster clients
      */
-    public AsyncHttpService(final HttpServerConfig config, @NotNull final DAO dao,
-                            @NotNull final Node nodes,
-                            @NotNull final Map<String, HttpClient> clusterClients) throws IOException {
+    public AsyncHttpService(
+      final HttpServerConfig config, 
+      @NotNull final DAO dao,
+      @NotNull final Node nodes,
+      @NotNull final Map<String, HttpClient> clusterClients) 
+      throws IOException {
         super(config);
         this.dao = (DAORocksDB) dao;
 
@@ -67,8 +70,11 @@ public class AsyncHttpService extends HttpServer implements Service {
      * @param dao to initialize the DAO instance within the server
      * @return config
      */
-    public static Service create(final int port, @NotNull final DAO dao,
-                                 @NotNull final Node nodes) throws IOException {
+    public static Service create(
+      final int port, 
+      @NotNull final DAO dao, 
+      @NotNull final Node nodes) 
+      throws IOException {
         final var acceptor = new AcceptorConfig();
         final var config = new HttpServerConfig();
         final String localhost = "http://localhost:";
