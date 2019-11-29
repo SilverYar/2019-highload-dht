@@ -37,8 +37,12 @@ public class RF {
      * @param clusterSize to specify the size of cluster
      * @return RF value
      */
-    public static RF calculateRF(final String replicas, @NotNull final HttpSession session,
-                                 final RF defaultRF, final int clusterSize) throws IOException {
+    public static RF calculateRF(
+      final String replicas, 
+      @NotNull final HttpSession session,
+      final RF defaultRF, 
+      final int clusterSize) 
+      throws IOException {
         RF rf = null;
         try {
             rf = replicas == null ? defaultRF : RF.of(replicas);
