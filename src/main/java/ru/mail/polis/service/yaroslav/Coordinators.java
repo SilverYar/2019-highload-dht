@@ -140,8 +140,12 @@ public class Coordinators {
      * @param acks to specify the amount of acks needed
      * @param session to specify if the session for output
      */
-    private void coordinateGet(final String[] replicaNodes, final Request rqst,
-                              final int acks, final HttpSession session) throws IOException {
+    private void coordinateGet(
+      final String[] replicaNodes, 
+      final Request rqst,
+      final int acks, 
+      final HttpSession session) 
+      throws IOException {
         final List<CompletableFuture<HttpResponse<byte[]>>> futures = new ArrayList<>(replicaNodes.length);
         final List<TimestampRecord> responses = new ArrayList<>();
         for (final String node : replicaNodes) {
