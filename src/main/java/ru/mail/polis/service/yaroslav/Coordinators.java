@@ -188,8 +188,11 @@ public class Coordinators {
      * @param request to define request
      * @param session to specify the session where to output messages
      */
-    public void coordinateRequest(final boolean proxied, final Request request,
-                                  final HttpSession session) throws IOException {
+    public void coordinateRequest(
+      final boolean proxied, 
+      final Request request,
+      final HttpSession session) 
+      throws IOException {
         final String id = request.getParameter("id=");
         final String replicas = request.getParameter("replicas");
         final RF rf = RF.calculateRF(replicas, session,
