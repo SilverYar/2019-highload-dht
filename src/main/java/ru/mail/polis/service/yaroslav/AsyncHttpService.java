@@ -184,7 +184,10 @@ public class AsyncHttpService extends HttpServer implements Service {
         Response act() throws IOException;
     }
 
-    private void entities(@NotNull final Request request, @NotNull final HttpSession session) throws IOException {
+    private void entities(
+                          @NotNull final Request request, 
+                          @NotNull final HttpSession session) 
+                          throws IOException {
         final String start = request.getParameter("start=");
         if (start == null || start.isEmpty()) {
             session.sendError(Response.BAD_REQUEST, "No start");
