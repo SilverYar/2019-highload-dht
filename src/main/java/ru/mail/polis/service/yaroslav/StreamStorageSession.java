@@ -35,7 +35,8 @@ final class StreamStorageSession extends HttpSession {
     }
 
     @NotNull
-    private static byte[] toByteArray(@NotNull final ByteBuffer buffer) {
+    private static byte[] toByteArray(
+      @NotNull final ByteBuffer buffer) {
         final byte[] result = new byte[buffer.remaining()];
         buffer.get(result);
         return result;
