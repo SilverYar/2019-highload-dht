@@ -109,7 +109,10 @@ public final class HttpService extends HttpServer implements Service {
         return new Response(key, body);
     }
 
-    private Response processResponse(@NotNull final ByteBuffer key, final Request request) throws IOException {
+    private Response processResponse(
+      @NotNull final ByteBuffer key, 
+      final Request request) 
+      throws IOException {
         final var method = request.getMethod();
         switch (method) {
             case Request.METHOD_GET: {
