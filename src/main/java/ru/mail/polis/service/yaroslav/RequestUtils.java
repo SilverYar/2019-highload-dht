@@ -67,8 +67,10 @@ public final class RequestUtils {
      * @param acks to specify the amount of acks required
      * @return response
      */
-    public Response postProcessDeleteFutures(final AtomicInteger asks, final int acks,
-                                             final List<CompletableFuture<HttpResponse<byte[]>>> futures) {
+    public Response postProcessDeleteFutures(
+      final AtomicInteger asks, 
+      final int acks,
+      final List<CompletableFuture<HttpResponse<byte[]>>> futures) {
         asks.set(checkCodeAndIncrement(asks, 202, futures));
         if (asks.get() >= futures.size() || asks.get() >= acks) {
             return new Response(Response.ACCEPTED, Response.EMPTY);
