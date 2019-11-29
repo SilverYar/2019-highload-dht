@@ -13,7 +13,9 @@ public class Node {
     private final List<String> nodes;
     private final String id;
 
-    public Node(@NotNull final Set<String> nodes, @NotNull final String id) {
+    public Node(
+      @NotNull final Set<String> nodes, 
+      @NotNull final String id) {
         this.nodes = new ArrayList<>(nodes);
         this.id = id;
     }
