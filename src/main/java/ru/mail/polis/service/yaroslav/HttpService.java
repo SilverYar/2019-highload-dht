@@ -105,7 +105,9 @@ public final class HttpService extends HttpServer implements Service {
         return new Response(key, Response.EMPTY);
     }
 
-    private Response responseWrapper(@NotNull final String key, @NotNull final byte[] body) {
+    private Response responseWrapper(
+      @NotNull final String key, 
+      @NotNull final byte[] body) {
         return new Response(key, body);
     }
 
