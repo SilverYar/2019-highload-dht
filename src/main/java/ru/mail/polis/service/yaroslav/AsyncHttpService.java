@@ -84,8 +84,7 @@ public class AsyncHttpService extends HttpServer implements Service {
         config.queueTime = 10;
         final Map<String, HttpClient> clusterClients = new HashMap<>();
         for (final Integer it : nodes.getPorts()) {
-            if (!nodes.getId().equals(localhost + it) && 
-                !clusterClients.containsKey(localhost + it)) {
+            if (!nodes.getId().equals(localhost + it) && !clusterClients.containsKey(localhost + it)) {
                 final HttpClient client = HttpClient.newBuilder()
                         .version(Version.HTTP_2)
                         .followRedirects(Redirect.NEVER)
@@ -217,7 +216,9 @@ public class AsyncHttpService extends HttpServer implements Service {
         try {
             final Iterator<Record> records =
                     dao.range(ByteBuffer.wrap(start.getBytes(StandardCharsets.UTF_8)),
-                            end == null ? null : ByteBuffer.wrap(end.getBytes(StandardCharsets.UTF_8)));
+                            end == null 
+                                    ? null 
+                                    : ByteBuffer.wrap(end.getBytes(StandardCharsets.UTF_8)));
             ((StreamStorageSession) session).stream(records);
         } catch (IOException e) {
             session.sendError(Response.INTERNAL_ERROR, e.getMessage());
