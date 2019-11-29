@@ -21,7 +21,10 @@ public class ServiceImpl extends HttpServer implements Service {
 
     private final DAO dao;
 
-    public ServiceImpl(final int port, @NotNull final DAO dao) throws IOException {
+    public ServiceImpl(
+      final int port, 
+      @NotNull final DAO dao) 
+      throws IOException {
         super(getConfig(port));
         this.dao = dao;
     }
