@@ -162,7 +162,10 @@ public class AsyncHttpService extends HttpServer implements Service {
         }
     }
 
-    private void executeAsync(@NotNull final HttpSession session, @NotNull final Action action) throws IOException {
+    private void executeAsync(
+                              @NotNull final HttpSession session, 
+                              @NotNull final Action action) 
+                              throws IOException {
         workerThreads.execute(() -> {
             try {
                 session.sendResponse(action.act());
